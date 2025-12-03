@@ -5,7 +5,14 @@ use std::{
 };
 
 fn invalid_id(id: &str) -> bool {
-    id.starts_with('0') || id[..id.len() / 2] == id[id.len() / 2..]
+    id.starts_with('0')
+        || (2..=id.len()).any(|splits| {
+            if !id.len().is_multiple_of(splits) {
+                return false;
+            }
+            let part_size = id.len() / splits;
+            (1..splits).all(|part| id[..part_size] == id[part * part_size..(part + 1) * part_size])
+        })
 }
 
 // Too high
@@ -47,6 +54,6 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(sum_invalid_ids("test.txt"), 1227775554);
+        assert_eq!(sum_invalid_ids("test.txt"), 4174379265);
     }
 }
